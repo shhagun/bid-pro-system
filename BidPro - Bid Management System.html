@@ -1,0 +1,1165 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!-- BidPro - Bid Management System (No Database) -->
+<!-- Free Web Development Internship Online Task -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BidPro - Bid Management System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <style>
+/* BidPro - Bid Management System styles
+   Palette: Green #059669, White #FFFFFF, Light Green #D1FAE5 */
+:root {
+  --primary: #059669;
+  --primary-dark: #047857;
+  --light: #D1FAE5;
+  --white: #FFFFFF;
+  --bg: #f1f8f5;
+  --card: #FFFFFF;
+  --text: #0f1f1a;
+  --muted: #5b6e66;
+  --border: #d5e6de;
+  --danger: #dc2626;
+  --warn: #d97706;
+  --shadow: 0 6px 20px rgba(5, 150, 105, .08);
+  --sidebar-w: 240px;
+}
+:root[data-theme="dark"] {
+  --bg: #0c1613;
+  --card: #13211c;
+  --text: #e7f5ef;
+  --muted: #92aaa0;
+  --border: #243a32;
+  --light: #123a2c;
+  --shadow: 0 6px 20px rgba(0, 0, 0, .35);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0; font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg); color: var(--text); line-height: 1.5;
+}
+h1, h2, h3 { margin: 0; }
+a { color: var(--primary); }
+.muted { color: var(--muted); }
+.center { text-align: center; }
+.hint { color: var(--muted); font-size: .85rem; margin: .75rem 0 0; }
+[hidden] { display: none !important; }
+
+/* Sidebar */
+.sidebar {
+  position: fixed; inset: 0 auto 0 0; width: var(--sidebar-w); background: var(--primary);
+  color: #fff; display: flex; flex-direction: column; padding: 20px 14px; z-index: 40;
+  transition: transform .25s ease;
+}
+.brand { font-size: 1.4rem; font-weight: 800; padding: 4px 10px 18px; letter-spacing: .3px; }
+.brand.big { color: var(--primary); text-align: center; font-size: 1.8rem; padding-bottom: 4px; }
+.nav-links { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.nav-links a {
+  display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 10px;
+  color: #eafff6; text-decoration: none; font-weight: 500; font-size: .95rem;
+}
+.nav-links a i { width: 20px; text-align: center; }
+.nav-links a:hover { background: rgba(255,255,255,.14); }
+.nav-links a.active { background: #fff; color: var(--primary-dark); font-weight: 700; }
+.side-foot { margin-top: auto; display: grid; gap: 10px; }
+.user-chip { display: flex; gap: 8px; align-items: center; padding: 8px 10px; background: rgba(255,255,255,.14); border-radius: 10px; font-weight: 600; overflow: hidden; }
+.user-chip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.scrim { display: none; }
+
+/* Main */
+.main-content { margin-left: var(--sidebar-w); padding: 0 24px 40px; min-height: 100vh; }
+.top-bar {
+  position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 12px;
+  padding: 14px 0; background: var(--bg); border-bottom: 1px solid var(--border); margin-bottom: 20px;
+}
+.top-bar h1 { font-size: 1.4rem; font-weight: 800; }
+.top-actions { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.menu-btn { display: none; }
+.icon-btn {
+  position: relative; width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--border);
+  background: var(--card); color: var(--text); cursor: pointer; font-size: 1rem;
+}
+.icon-btn:hover { background: var(--light); }
+.count {
+  position: absolute; top: -6px; right: -6px; background: var(--danger); color: #fff; font-size: .7rem;
+  min-width: 18px; height: 18px; border-radius: 9px; display: grid; place-items: center; font-weight: 700; padding: 0 4px;
+}
+.live { display: flex; align-items: center; gap: 6px; font-size: .85rem; font-weight: 600; cursor: pointer; color: var(--muted); }
+.live input { accent-color: var(--primary); }
+.live .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+.live input:checked ~ .dot { background: var(--primary); animation: pulse 1.6s infinite; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(5,150,105,.6); } 100% { box-shadow: 0 0 0 9px rgba(5,150,105,0); } }
+
+.notif-wrap { position: relative; }
+.notif-panel {
+  position: absolute; right: 0; top: 48px; width: 320px; max-height: 380px; overflow: auto;
+  background: var(--card); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow); padding: 10px;
+}
+.notif-panel h4 { margin: 4px 6px 8px; display: flex; justify-content: space-between; align-items: center; font-size: .95rem; }
+.notif-item { padding: 9px 10px; border-radius: 10px; font-size: .88rem; border-bottom: 1px solid var(--border); }
+.notif-item.unread { background: var(--light); }
+.notif-item small { display: block; color: var(--muted); }
+
+/* Views & cards */
+.view { display: none; animation: fade .25s ease; }
+.view.active { display: block; }
+@keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 18px;
+  box-shadow: var(--shadow); margin-bottom: 18px;
+}
+.card h3 { font-size: 1.05rem; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.card h3 i { color: var(--primary); }
+.grid { display: grid; gap: 18px; }
+.grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid > .card { margin-bottom: 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 18px; }
+.stat { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; box-shadow: var(--shadow); }
+.stat .ico { width: 38px; height: 38px; border-radius: 10px; background: var(--light); color: var(--primary); display: grid; place-items: center; margin-bottom: 10px; }
+.stat .val { font-size: 1.5rem; font-weight: 800; }
+.stat .lbl { color: var(--muted); font-size: .85rem; }
+
+/* Forms */
+.form { display: grid; gap: 14px; }
+label { display: grid; gap: 6px; font-weight: 600; font-size: .9rem; }
+label.inline { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+label.inline select { flex: 1; min-width: 200px; }
+input, select {
+  font: inherit; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px;
+  background: var(--card); color: var(--text); width: 100%; min-width: 0;
+}
+input:focus, select:focus, button:focus-visible, a:focus-visible { outline: 3px solid rgba(5,150,105,.35); outline-offset: 1px; }
+input[type=checkbox] { width: auto; }
+label.check { display: flex; align-items: center; gap: 8px; font-weight: 500; white-space: nowrap; }
+.form-msg { margin: 0; min-height: 1.2em; font-size: .9rem; font-weight: 600; color: var(--primary); }
+.form-msg.err { color: var(--danger); }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; font: inherit; font-weight: 700;
+  padding: 10px 16px; border-radius: 10px; border: 1px solid transparent; cursor: pointer;
+}
+.btn.primary { background: var(--primary); color: #fff; }
+.btn.primary:hover { background: var(--primary-dark); }
+.btn.ghost { background: transparent; color: inherit; border-color: var(--border); }
+.sidebar .btn.ghost { color: #fff; border-color: rgba(255,255,255,.4); }
+.sidebar .btn.ghost:hover { background: rgba(255,255,255,.14); }
+.btn.ghost:hover { background: var(--light); }
+.btn.danger { background: transparent; color: var(--danger); border-color: var(--danger); }
+.btn.danger:hover { background: rgba(220,38,38,.08); }
+.btn.sm { padding: 6px 10px; font-size: .82rem; }
+.btn.block { width: 100%; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { border: 1px solid var(--primary); color: var(--primary); background: var(--light); border-radius: 999px; padding: 5px 12px; font-weight: 700; font-size: .82rem; cursor: pointer; }
+.chip:hover { background: var(--primary); color: #fff; }
+.filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 16px; align-items: center; }
+.filters + h3 { margin-top: 6px; }
+
+/* Tables */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+th { text-align: left; background: var(--primary); color: #fff; padding: 11px 12px; font-size: .78rem; letter-spacing: .5px; text-transform: uppercase; white-space: nowrap; }
+th:first-child { border-top-left-radius: 10px; } th:last-child { border-top-right-radius: 10px; }
+td { padding: 11px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+tbody tr:nth-child(even) { background: color-mix(in srgb, var(--light) 45%, transparent); }
+tbody tr.mine td:first-child { box-shadow: inset 3px 0 0 var(--primary); }
+.empty { color: var(--muted); text-align: center; padding: 22px 8px; margin: 0; }
+
+/* Badges */
+.badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px; font-size: .78rem; font-weight: 700; white-space: nowrap; background: var(--light); color: var(--primary-dark); }
+:root[data-theme="dark"] .badge { color: #7ee8bf; }
+.s-outbid, .s-lost { background: #fee2e2; color: #b91c1c; }
+.s-pending, .s-placed { background: #fef3c7; color: #92400e; }
+.s-withdrawn { background: #e5e7eb; color: #374151; }
+.s-won { background: var(--primary); color: #fff; }
+
+/* Lists */
+.list { display: grid; gap: 10px; }
+.row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px; border: 1px solid var(--border); border-radius: 12px; }
+.row .t { font-weight: 700; }
+.row .s { color: var(--muted); font-size: .85rem; }
+.kv { display: grid; grid-template-columns: 140px 1fr; gap: 8px 12px; margin: 0; }
+.kv dt { color: var(--muted); font-weight: 600; font-size: .88rem; }
+.kv dd { margin: 0; font-weight: 600; }
+.actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+.big-price { font-size: 2rem; font-weight: 800; color: var(--primary); }
+.timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.timeline li { display: flex; justify-content: space-between; gap: 10px; padding: 9px 12px; border-left: 3px solid var(--primary); background: var(--light); border-radius: 0 10px 10px 0; font-size: .9rem; }
+.timeline li.me { font-weight: 700; }
+
+/* Charts */
+.hbar { display: grid; grid-template-columns: 110px 1fr 70px; gap: 10px; align-items: center; margin: 9px 0; font-size: .88rem; }
+.hbar .track { height: 12px; background: var(--light); border-radius: 6px; overflow: hidden; }
+.hbar .fill { height: 100%; background: var(--primary); border-radius: 6px; transition: width .5s; }
+.hbar b { text-align: right; }
+svg.line { width: 100%; height: auto; }
+svg.line .ax { font-size: 11px; fill: var(--muted); }
+
+/* Auth */
+.auth-overlay { position: fixed; inset: 0; z-index: 100; background: linear-gradient(135deg, var(--primary), #34d399); display: grid; place-items: center; padding: 16px; overflow: auto; }
+.auth-card { width: 100%; max-width: 400px; background: var(--card); border-radius: 20px; padding: 26px; box-shadow: 0 20px 50px rgba(0,0,0,.25); }
+.tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 16px 0; background: var(--light); padding: 5px; border-radius: 12px; }
+.tab { border: 0; background: transparent; padding: 9px; border-radius: 9px; font: inherit; font-weight: 700; cursor: pointer; color: var(--text); }
+.tab.active { background: var(--primary); color: #fff; }
+
+/* Toasts */
+.toasts { position: fixed; right: 16px; bottom: 16px; display: grid; gap: 10px; z-index: 200; max-width: min(360px, calc(100vw - 32px)); }
+.toast { background: var(--text); color: var(--bg); padding: 12px 14px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,.3); font-size: .9rem; animation: fade .25s ease; border-left: 5px solid var(--primary); }
+.toast.err { border-left-color: var(--danger); }
+
+/* Responsive */
+@media (max-width: 960px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: none; box-shadow: 0 0 40px rgba(0,0,0,.4); }
+  .scrim.show { display: block; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 35; }
+  .main-content { margin-left: 0; padding: 0 14px 30px; }
+  .menu-btn { display: inline-block; }
+  .grid.two { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .top-bar h1 { font-size: 1.15rem; }
+  .live-text { display: none; }
+  .notif-panel { position: fixed; left: 12px; right: 12px; top: 64px; width: auto; }
+  .kv { grid-template-columns: 110px 1fr; }
+  .hbar { grid-template-columns: 90px 1fr 56px; }
+  /* tables become stacked cards on phones */
+  .table-wrap table, .table-wrap tbody, .table-wrap tr, .table-wrap td { display: block; width: 100%; }
+  .table-wrap thead { display: none; }
+  .table-wrap tr { border: 1px solid var(--border); border-radius: 12px; margin-bottom: 12px; padding: 6px 0; background: var(--card) !important; }
+  .table-wrap td { display: flex; justify-content: space-between; gap: 12px; border: 0; padding: 6px 12px; text-align: right; }
+  .table-wrap td::before { content: attr(data-label); font-weight: 700; color: var(--muted); text-align: left; font-size: .8rem; text-transform: uppercase; }
+}
+
+/* Print / PDF for reports */
+@media print {
+  .sidebar, .top-bar, .filters, .toasts, .scrim, .auth-overlay { display: none !important; }
+  .main-content { margin: 0; padding: 0; }
+  .view { display: none !important; }
+  .view.active { display: block !important; }
+  .card { box-shadow: none; border: 0; }
+  .table-wrap table { display: table; } .table-wrap thead { display: table-header-group; }
+  .table-wrap tr { display: table-row; border: 0; } .table-wrap td { display: table-cell; text-align: left; }
+  .table-wrap td::before { content: none; }
+  body { background: #fff; color: #000; }
+}
+
+.fa-solid{font-style:normal;display:inline-block}
+.fa-gauge-high::before{content:"📊"}
+.fa-gavel::before{content:"🔨"}
+.fa-list::before{content:"📋"}
+.fa-file-lines::before{content:"📄"}
+.fa-clock-rotate-left::before{content:"🕘"}
+.fa-robot::before{content:"🤖"}
+.fa-chart-line::before{content:"📈"}
+.fa-file-export::before{content:"📤"}
+.fa-right-from-bracket::before{content:"🚪"}
+.fa-right-to-bracket::before{content:"🔑"}
+.fa-circle-user::before{content:"👤"}
+.fa-user-plus::before{content:"➕"}
+.fa-bars::before{content:"☰"}
+.fa-bell::before{content:"🔔"}
+.fa-moon::before{content:"🌙"}
+.fa-sun::before{content:"☀️"}
+.fa-hourglass-half::before{content:"⏳"}
+.fa-clock::before{content:"🕒"}
+.fa-hand-holding-dollar::before{content:"💵"}
+.fa-tag::before{content:"🏷️"}
+.fa-receipt::before{content:"🧾"}
+.fa-arrow-up::before{content:"⬆️"}
+.fa-ban::before{content:"🚫"}
+.fa-sliders::before{content:"🎚️"}
+.fa-plus::before{content:"＋"}
+.fa-trash::before{content:"🗑️"}
+.fa-file-csv::before{content:"📑"}
+.fa-file-pdf::before{content:"🖨️"}
+.fa-trophy::before{content:"🏆"}
+.fa-arrow-trend-down::before{content:"📉"}
+.fa-circle-check::before{content:"✅"}
+.fa-percent::before{content:"％"}
+.fa-wallet::before{content:"👛"}
+.fa-arrow-up-9-1::before{content:"🔝"}
+.fa-calculator::before{content:"🧮"}
+</style>
+</head>
+<body>
+
+  <!-- Login / Register -->
+  <div id="authOverlay" class="auth-overlay" hidden>
+    <div class="auth-card">
+      <div class="brand big">💰 BidPro</div>
+      <p class="muted center">Sign in to manage your bids</p>
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-auth="login" type="button">Login</button>
+        <button class="tab" data-auth="register" type="button">Register</button>
+      </div>
+      <form id="loginForm" class="form">
+        <label>Email<input id="loginEmail" type="email" required autocomplete="username" value="demo@bidpro.com"></label>
+        <label>Password<input id="loginPass" type="password" required autocomplete="current-password" value="demo123"></label>
+        <button class="btn primary block" type="submit"><i class="fa-solid fa-right-to-bracket"></i> Login</button>
+        <p class="hint">Demo account is pre-filled: demo@bidpro.com / demo123</p>
+        <p class="form-msg err" id="loginMsg" role="alert"></p>
+      </form>
+      <form id="registerForm" class="form" hidden>
+        <label>Full name<input id="regName" required maxlength="40" autocomplete="name"></label>
+        <label>Email<input id="regEmail" type="email" required autocomplete="username"></label>
+        <label>Password (min 6 characters)<input id="regPass" type="password" required minlength="6" autocomplete="new-password"></label>
+        <button class="btn primary block" type="submit"><i class="fa-solid fa-user-plus"></i> Create account</button>
+        <p class="form-msg err" id="regMsg" role="alert"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Sidebar Navigation -->
+  <nav class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="brand">💰 BidPro</div>
+    <ul class="nav-links">
+      <li><a href="#dashboard" data-nav="dashboard"><i class="fa-solid fa-gauge-high"></i> Dashboard</a></li>
+      <li><a href="#place-bid" data-nav="place-bid"><i class="fa-solid fa-gavel"></i> Place Bid</a></li>
+      <li><a href="#bids" data-nav="bids"><i class="fa-solid fa-list"></i> Bids</a></li>
+      <li><a href="#bid-detail" data-nav="bid-detail"><i class="fa-solid fa-file-lines"></i> Bid Detail</a></li>
+      <li><a href="#history" data-nav="history"><i class="fa-solid fa-clock-rotate-left"></i> Bid History</a></li>
+      <li><a href="#auto-bid" data-nav="auto-bid"><i class="fa-solid fa-robot"></i> Auto-Bid</a></li>
+      <li><a href="#analytics" data-nav="analytics"><i class="fa-solid fa-chart-line"></i> Analytics</a></li>
+      <li><a href="#reports" data-nav="reports"><i class="fa-solid fa-file-export"></i> Reports</a></li>
+    </ul>
+    <div class="side-foot">
+      <div class="user-chip"><i class="fa-solid fa-circle-user"></i> <span id="userName">Guest</span></div>
+      <button class="btn ghost block" id="logoutBtn" type="button"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+    </div>
+  </nav>
+  <div class="scrim" id="scrim"></div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Top Bar -->
+    <header class="top-bar">
+      <button class="icon-btn menu-btn" id="menuBtn" type="button" aria-label="Open menu"><i class="fa-solid fa-bars"></i></button>
+      <h1 id="pageTitle">Dashboard</h1>
+      <div class="top-actions">
+        <label class="live" title="Simulated real-time bids from other bidders">
+          <input type="checkbox" id="liveToggle" checked> <span class="dot"></span> <span class="live-text">Live</span>
+        </label>
+        <div class="notif-wrap">
+          <button class="icon-btn" id="bellBtn" type="button" aria-label="Notifications"><i class="fa-solid fa-bell"></i><span class="count" id="bellCount" hidden>0</span></button>
+          <div class="notif-panel" id="notifPanel" hidden></div>
+        </div>
+        <button class="icon-btn" id="themeBtn" type="button" aria-label="Toggle dark mode"><i class="fa-solid fa-moon"></i></button>
+      </div>
+    </header>
+
+    <!-- Dashboard -->
+    <section id="dashboard" class="view">
+      <div class="stats" id="dashStats"></div>
+      <div class="grid two">
+        <div class="card"><h3><i class="fa-solid fa-hourglass-half"></i> Ending soon</h3><div id="dashEnding"></div></div>
+        <div class="card"><h3><i class="fa-solid fa-clock"></i> Recent bids</h3><div id="dashRecent"></div></div>
+      </div>
+    </section>
+
+    <!-- Place Bid -->
+    <section id="place-bid" class="view">
+      <div class="grid two">
+        <div class="card">
+          <h3><i class="fa-solid fa-gavel"></i> Place a bid</h3>
+          <form id="bidForm" class="form">
+            <label>Auction<select id="pbAuction" required></select></label>
+            <label>Bid type
+              <select id="pbType">
+                <option value="manual">Manual Bid</option>
+                <option value="incremental">Incremental Bid (minimum raise)</option>
+                <option value="max">Max Bid (auto-raise up to my limit)</option>
+                <option value="proxy">Proxy Bid (bid on my behalf)</option>
+              </select>
+            </label>
+            <label><span id="pbAmountLabel">Bid amount ($)</span><input id="pbAmount" type="number" min="1" step="1"></label>
+            <div class="chips" id="pbChips" aria-label="Bid increment calculator"></div>
+            <label>Note (optional)<input id="pbNote" maxlength="80" placeholder="e.g. Gift for a friend"></label>
+            <button class="btn primary" type="submit"><i class="fa-solid fa-hand-holding-dollar"></i> Place Bid</button>
+            <p class="form-msg" id="pbMsg" role="status"></p>
+          </form>
+        </div>
+        <div class="card" id="pbInfo"></div>
+      </div>
+    </section>
+
+    <!-- Bids -->
+    <section id="bids" class="view">
+      <div class="card">
+        <div class="filters">
+          <input id="fSearch" type="search" placeholder="Search auction, bidder, note..." aria-label="Search bids">
+          <select id="fAuction" aria-label="Filter by auction"></select>
+          <select id="fStatus" aria-label="Filter by status">
+            <option value="">All statuses</option>
+            <option value="placed">📝 Placed</option><option value="winning">🏆 Winning</option><option value="outbid">📉 Outbid</option>
+            <option value="won">✅ Won</option><option value="lost">❌ Lost</option><option value="pending">⏳ Pending</option><option value="withdrawn">🚫 Withdrawn</option>
+          </select>
+          <input id="fMin" type="number" min="0" placeholder="Min $" aria-label="Minimum amount">
+          <input id="fMax" type="number" min="0" placeholder="Max $" aria-label="Maximum amount">
+          <label class="check"><input type="checkbox" id="fMine"> My bids only</label>
+        </div>
+        <div id="bidsTable"></div>
+      </div>
+    </section>
+
+    <!-- Bid Detail -->
+    <section id="bid-detail" class="view">
+      <div class="card">
+        <label class="inline">Select a bid
+          <select id="bdSelect"></select>
+        </label>
+      </div>
+      <div id="bdBody"></div>
+    </section>
+
+    <!-- Bid History -->
+    <section id="history" class="view">
+      <div class="card">
+        <div class="filters">
+          <select id="hAuction" aria-label="Filter history by auction"></select>
+        </div>
+        <div id="historyTable"></div>
+      </div>
+    </section>
+
+    <!-- Auto-Bid -->
+    <section id="auto-bid" class="view">
+      <div class="grid two">
+        <div class="card">
+          <h3><i class="fa-solid fa-robot"></i> New auto-bid rule</h3>
+          <form id="abForm" class="form">
+            <label>Auction<select id="abAuction" required></select></label>
+            <label>Maximum bid ($)<input id="abMax" type="number" min="1" step="1" required></label>
+            <label>Increment per bid ($)<input id="abInc" type="number" min="1" step="1" value="10" required></label>
+            <button class="btn primary" type="submit"><i class="fa-solid fa-plus"></i> Save rule</button>
+            <p class="form-msg" id="abMsg" role="status"></p>
+          </form>
+          <p class="hint">When someone outbids you, BidPro raises your bid automatically until your maximum is reached.</p>
+        </div>
+        <div class="card"><h3><i class="fa-solid fa-sliders"></i> My auto-bid rules</h3><div id="abTable"></div></div>
+      </div>
+    </section>
+
+    <!-- Analytics -->
+    <section id="analytics" class="view">
+      <div class="stats" id="anStats"></div>
+      <div class="grid two">
+        <div class="card"><h3>Bid amounts over time</h3><div id="anLine"></div></div>
+        <div class="card"><h3>Bids by status</h3><div id="anStatus"></div></div>
+        <div class="card"><h3>Bids by type</h3><div id="anType"></div></div>
+        <div class="card"><h3>Spending by category</h3><div id="anCat"></div></div>
+      </div>
+    </section>
+
+    <!-- Reports -->
+    <section id="reports" class="view">
+      <div class="card">
+        <div class="filters">
+          <select id="rType" aria-label="Report type">
+            <option value="bids">Bid report</option>
+            <option value="spending">Spending report</option>
+            <option value="winning">Winning report</option>
+          </select>
+          <button class="btn primary" id="rCsv" type="button"><i class="fa-solid fa-file-csv"></i> Export CSV</button>
+          <button class="btn ghost" id="rPrint" type="button"><i class="fa-solid fa-file-pdf"></i> Print / PDF</button>
+        </div>
+        <h3 id="rTitle"></h3>
+        <p class="muted" id="rSummary"></p>
+        <div id="rTable"></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+
+  <script>
+/* BidPro - Bid Management System
+   Frontend-only: all data lives in JavaScript arrays/objects and is persisted with localStorage. */
+(() => {
+  'use strict';
+
+  /* ---------- Helpers ---------- */
+  const KEY = 'bidpro_state_v1', SESSION = 'bidpro_session_v1', THEME = 'bidpro_theme';
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const money = n => '$' + Number(n || 0).toLocaleString('en-US');
+  const fmtDate = iso => new Date(iso).toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* storage unavailable */ } },
+    del(k) { try { localStorage.removeItem(k); } catch (e) { /* ignore */ } }
+  };
+
+  const ICON = { placed: '📝', winning: '🏆', outbid: '📉', won: '✅', lost: '❌', pending: '⏳', withdrawn: '🚫' };
+  const LABEL = { placed: 'Placed', winning: 'Winning', outbid: 'Outbid', won: 'Won', lost: 'Lost', pending: 'Pending', withdrawn: 'Withdrawn' };
+  const TYPE = { manual: 'Manual', auto: 'Auto', incremental: 'Incremental', max: 'Max', proxy: 'Proxy' };
+  const TITLES = {
+    dashboard: 'Dashboard', 'place-bid': 'Place Bid', bids: 'Bids', 'bid-detail': 'Bid Detail',
+    history: 'Bid History', 'auto-bid': 'Auto-Bid Settings', analytics: 'Bid Analytics', reports: 'Reports'
+  };
+
+  let state = null, user = null, silent = false, stampOverride = null, preselect = null;
+  const stamp = () => stampOverride || new Date().toISOString();
+  const nextId = arr => arr.reduce((m, x) => Math.max(m, x.id), 0) + 1;
+  const badge = s => `<span class="badge s-${s}">${ICON[s] || ''} ${LABEL[s] || s}</span>`;
+
+  /* ---------- Data layer ---------- */
+  function save() { store.set(KEY, JSON.stringify(state)); }
+
+  function load() {
+    const raw = store.get(KEY);
+    if (!raw) return null;
+    try {
+      const s = JSON.parse(raw);
+      return s && Array.isArray(s.auctions) && Array.isArray(s.bids) ? s : null;
+    } catch (e) { return null; }
+  }
+
+  const auctionOf = id => state.auctions.find(a => a.id === Number(id));
+  const userOf = id => state.users.find(u => u.id === id);
+  const nameOf = id => (user && id === user.id) ? 'You' : (userOf(id)?.name || 'Unknown');
+  const hasBids = a => state.bids.some(b => b.auction_id === a.id && b.status !== 'withdrawn');
+  const minNext = a => hasBids(a) ? a.current_price + a.increment : a.start_price;
+
+  function seedState() {
+    const now = Date.now(), H = 36e5;
+    const t = h => new Date(now + h * H).toISOString();
+    const s = {
+      users: [
+        { id: 1, name: 'Demo User', email: 'demo@bidpro.com', password: 'demo123' },
+        { id: 2, name: 'Aarav Mehta', bot: true },
+        { id: 3, name: 'Priya Nair', bot: true },
+        { id: 4, name: 'Rahul Verma', bot: true }
+      ],
+      auctions: [], bids: [], history: [], autobids: [], notifications: []
+    };
+    const A = (id, title, category, start, inc, startH, endH) => s.auctions.push({
+      id, title, category, start_price: start, current_price: start, increment: inc,
+      start_date: t(startH), end_date: t(endH), status: startH > 0 ? 'upcoming' : 'active', highest_bidder: null
+    });
+    A(1, 'Vintage Rolex Watch', 'Luxury', 6500, 100, -48, 30);
+    A(2, 'Canon DSLR Camera', 'Electronics', 800, 25, -30, 6);
+    A(3, 'Antique Oak Desk', 'Furniture', 1200, 50, -24, 52);
+    A(4, 'Gaming Laptop', 'Electronics', 900, 20, -10, 75);
+    A(5, 'Handmade Persian Rug', 'Home', 2000, 100, -20, 14);
+    A(6, 'Mountain Bike', 'Sports', 300, 10, -60, -5);
+    A(7, 'Vinyl Record Collection', 'Collectibles', 150, 10, -70, -20);
+    A(8, 'Smart Home Hub Bundle', 'Electronics', 250, 10, -12, 3);
+    A(9, 'Rare Coin Set', 'Collectibles', 1000, 50, 4, 90);
+    state = s; silent = true;
+    // [auction, bidder, amount, hours offset, type]
+    [
+      [1, 3, 6600, -20, 'manual'], [1, 1, 6800, -16, 'manual'], [1, 2, 7000, -10, 'manual'], [1, 1, 7200, -3, 'manual'],
+      [2, 4, 850, -12, 'manual'], [2, 1, 900, -9, 'manual'], [2, 3, 950, -4, 'manual'],
+      [3, 2, 1250, -8, 'manual'], [3, 1, 1300, -2, 'incremental'],
+      [5, 3, 2100, -6, 'manual'], [5, 1, 2200, -5, 'manual'], [5, 2, 2300, -1, 'manual'],
+      [6, 2, 320, -30, 'manual'], [6, 1, 340, -26, 'manual'], [6, 4, 360, -20, 'manual'], [6, 1, 380, -12, 'manual'],
+      [7, 1, 150, -40, 'manual'], [7, 3, 170, -30, 'manual'],
+      [8, 3, 260, -1, 'manual']
+    ].forEach(([aid, uid, amt, h, type]) => { stampOverride = t(h); addBid(auctionOf(aid), uid, amt, type); });
+    stampOverride = null;
+    s.autobids.push({ id: 1, user_id: 1, auction_id: 5, max_amount: 2600, increment: 100, status: 'active' });
+    tick();
+    silent = false;
+    save();
+  }
+
+  function pushHist(b, type, newAmt, prevAmt) {
+    state.history.push({
+      id: nextId(state.history), bid_id: b.id, previous_amount: prevAmt ?? b.amount,
+      new_amount: newAmt, timestamp: stamp(), change_type: type
+    });
+  }
+
+  function notify(uid, text) {
+    const u = userOf(uid);
+    if (silent || !u || u.bot) return;
+    state.notifications.push({ id: nextId(state.notifications), user_id: uid, text, time: new Date().toISOString(), read: false });
+    if (user && uid === user.id) toast(text);
+  }
+
+  /* Re-rank all live bids of an auction and log status transitions */
+  function recompute(a) {
+    if (a.status === 'ended') return;
+    const live = state.bids.filter(b => b.auction_id === a.id && !['withdrawn', 'won', 'lost'].includes(b.status));
+    live.sort((x, y) => y.amount - x.amount || new Date(x.timestamp) - new Date(y.timestamp));
+    const top = live[0];
+    a.current_price = top ? top.amount : a.start_price;
+    a.highest_bidder = top ? top.bidder_id : null;
+    live.forEach((b, i) => {
+      const prev = b.status;
+      const next = a.status === 'upcoming' ? 'pending' : (i === 0 ? 'winning' : 'outbid');
+      if (prev === next) return;
+      b.status = next;
+      if (prev === 'placed') return;
+      if (prev === 'winning' && next === 'outbid') {
+        pushHist(b, 'outbid', top.amount);
+        notify(b.bidder_id, `📉 You were outbid on "${a.title}". Current bid: ${money(a.current_price)}`);
+      } else if (prev === 'outbid' && next === 'winning') pushHist(b, 'reinstated', top.amount);
+      else if (prev === 'pending') pushHist(b, 'activated', top.amount);
+    });
+  }
+
+  function addBid(a, uid, amount, type, note = '') {
+    const old = a.current_price;
+    const bid = { id: nextId(state.bids), auction_id: a.id, bidder_id: uid, amount, status: 'placed', timestamp: stamp(), bid_type: type, note };
+    state.bids.push(bid);
+    state.history.push({
+      id: nextId(state.history), bid_id: bid.id, previous_amount: old, new_amount: amount,
+      timestamp: bid.timestamp, change_type: type === 'auto' ? 'auto-bid' : 'placed'
+    });
+    recompute(a);
+    return bid;
+  }
+
+  function settle(a) {
+    const live = state.bids.filter(b => b.auction_id === a.id && !['withdrawn', 'won', 'lost'].includes(b.status));
+    live.sort((x, y) => y.amount - x.amount || new Date(x.timestamp) - new Date(y.timestamp));
+    a.status = 'ended';
+    const prevStamp = stampOverride; stampOverride = a.end_date;
+    const told = new Set();
+    live.forEach((b, i) => {
+      b.status = i === 0 ? 'won' : 'lost';
+      pushHist(b, b.status, live[0].amount);
+      if (!told.has(b.bidder_id)) {
+        told.add(b.bidder_id);
+        notify(b.bidder_id, i === 0 ? `🏆 You won "${a.title}" for ${money(b.amount)}!` : `❌ Auction ended: you lost "${a.title}".`);
+      }
+    });
+    stampOverride = prevStamp;
+  }
+
+  function tick() {
+    const now = Date.now(); let changed = false;
+    state.auctions.forEach(a => {
+      if (a.status === 'upcoming' && new Date(a.start_date) <= now) { a.status = 'active'; recompute(a); changed = true; }
+      if (a.status === 'active' && new Date(a.end_date) <= now) { settle(a); changed = true; }
+    });
+    if (changed) save();
+    return changed;
+  }
+
+  function setAutoBid(uid, aid, max, inc) {
+    let ab = state.autobids.find(x => x.user_id === uid && x.auction_id === aid);
+    if (ab) Object.assign(ab, { max_amount: max, increment: inc, status: 'active' });
+    else { ab = { id: nextId(state.autobids), user_id: uid, auction_id: aid, max_amount: max, increment: inc, status: 'active' }; state.autobids.push(ab); }
+    return ab;
+  }
+
+  function runAutoBids(aid) {
+    for (let i = 0; i < 30; i++) {
+      const a = auctionOf(aid);
+      if (!a || a.status !== 'active') break;
+      const min = minNext(a);
+      let fired = false;
+      const cands = state.autobids.filter(x => x.auction_id === aid && x.status === 'active' && x.user_id !== a.highest_bidder);
+      for (const ab of cands) {
+        if (ab.max_amount < min) {
+          ab.status = 'exhausted';
+          notify(ab.user_id, `⚠️ Auto-bid limit (${money(ab.max_amount)}) reached on "${a.title}".`);
+          continue;
+        }
+        const extra = Math.max(0, (ab.increment || a.increment) - a.increment);
+        const amt = Math.min(ab.max_amount, min + extra);
+        addBid(a, ab.user_id, amt, 'auto');
+        notify(ab.user_id, `🤖 Auto-bid placed ${money(amt)} on "${a.title}".`);
+        fired = true; break;
+      }
+      if (!fired) break;
+    }
+  }
+
+  function afterBid(a) { runAutoBids(a.id); save(); }
+
+  function placeBid(uid, aid, amount, type, note) {
+    const fail = msg => ({ ok: false, msg });
+    const a = auctionOf(aid);
+    if (!a) return fail('Please select an auction.');
+    if (a.status === 'ended') return fail('This auction has already ended.');
+    const min = minNext(a);
+    amount = type === 'incremental' ? min : Number(amount);
+    if (!isFinite(amount) || amount <= 0) return fail('Enter a valid amount.');
+    if (type === 'max' || type === 'proxy') {
+      if (amount < min) return fail(`Your maximum must be at least ${money(min)}.`);
+      setAutoBid(uid, a.id, amount, a.increment);
+      if (a.highest_bidder !== uid) {
+        addBid(a, uid, min, type, note); afterBid(a);
+        return { ok: true, msg: `Bid placed at ${money(min)}. Bidding automatically up to ${money(amount)}.` };
+      }
+      save();
+      return { ok: true, msg: `You are already highest. Maximum updated to ${money(amount)}.` };
+    }
+    if (a.highest_bidder === uid) return fail('You are already the highest bidder on this auction.');
+    if (amount < min) return fail(`Minimum bid is ${money(min)}.`);
+    addBid(a, uid, amount, type, note);
+    afterBid(a);
+    const cur = auctionOf(aid);
+    return cur.highest_bidder === uid
+      ? { ok: true, msg: `Bid of ${money(amount)} placed. You are winning! 🏆` }
+      : { ok: true, msg: `Bid of ${money(amount)} placed, but an auto-bid outbid you.` };
+  }
+
+  function withdraw(bidId) {
+    const b = state.bids.find(x => x.id === bidId);
+    if (!b || b.bidder_id !== user.id) return;
+    const a = auctionOf(b.auction_id);
+    if (a.status === 'ended' || b.status === 'withdrawn') return toast('This bid can no longer be withdrawn.', true);
+    if (!confirm(`Withdraw your ${money(b.amount)} bid on "${a.title}"?`)) return;
+    pushHist(b, 'withdrawn', b.amount);
+    b.status = 'withdrawn';
+    recompute(a); save(); renderCurrent();
+    toast('Bid withdrawn.');
+  }
+
+  /* ---------- Derived data ---------- */
+  const myBids = () => state.bids.filter(b => b.bidder_id === user.id);
+  function stats() {
+    const m = myBids(), c = s => m.filter(b => b.status === s).length;
+    const won = c('won'), lost = c('lost');
+    const wonAuctions = new Set(m.filter(b => b.status === 'won').map(b => b.auction_id)).size;
+    const lostAuctions = new Set(m.filter(b => b.status === 'lost').map(b => b.auction_id)).size;
+    return {
+      total: m.length, winning: c('winning'), outbid: c('outbid'), won, lost, pending: c('pending'), withdrawn: c('withdrawn'),
+      rate: wonAuctions + lostAuctions ? Math.round(wonAuctions / (wonAuctions + lostAuctions) * 100) : 0,
+      spent: m.filter(b => b.status === 'won').reduce((s, b) => s + b.amount, 0),
+      highest: m.reduce((x, b) => Math.max(x, b.amount), 0),
+      avg: m.length ? Math.round(m.reduce((s, b) => s + b.amount, 0) / m.length) : 0
+    };
+  }
+  function resultOf(b) {
+    if (b.status === 'won') return '🏆 Winner';
+    if (b.status === 'withdrawn') return '🚫 Withdrawn';
+    if (b.status === 'lost') {
+      const top = Math.max(...state.bids.filter(x => x.auction_id === b.auction_id && x.status === 'lost').map(x => x.amount));
+      return b.amount === top ? '🥈 Runner Up' : '📉 Outbid';
+    }
+    if (b.status === 'outbid') return '📉 Outbid';
+    return '⏳ Ongoing';
+  }
+  function timeLeft(iso) {
+    const ms = new Date(iso) - Date.now();
+    if (ms <= 0) return 'Ended';
+    const s = Math.floor(ms / 1000), d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), sec = s % 60;
+    if (d) return `${d}d ${h}h`;
+    if (h) return `${h}h ${String(m).padStart(2, '0')}m`;
+    return `${m}m ${String(sec).padStart(2, '0')}s`;
+  }
+  const countdown = a => a.status === 'upcoming' ? `Starts ${fmtDate(a.start_date)}` : a.status === 'ended' ? 'Ended' : `<span class="cd" data-end="${a.end_date}">${timeLeft(a.end_date)}</span>`;
+
+  /* ---------- UI helpers ---------- */
+  function toast(msg, isErr) {
+    const el = document.createElement('div');
+    el.className = 'toast' + (isErr ? ' err' : '');
+    el.textContent = msg;
+    $('#toasts').appendChild(el);
+    setTimeout(() => el.remove(), 4500);
+  }
+  function table(heads, rows, empty = 'No records found.') {
+    if (!rows.length) return `<p class="empty">${esc(empty)}</p>`;
+    return `<div class="table-wrap"><table><thead><tr>${heads.map(h => `<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${
+      rows.map(r => `<tr${r.cls ? ` class="${r.cls}"` : ''}>${r.cells.map((c, i) => `<td data-label="${esc(heads[i])}">${c}</td>`).join('')}</tr>`).join('')
+    }</tbody></table></div>`;
+  }
+  function fillSelect(sel, options, keep = true) {
+    const old = sel.value;
+    sel.innerHTML = options.map(o => `<option value="${esc(o.v)}">${esc(o.t)}</option>`).join('');
+    if (keep && options.some(o => String(o.v) === old)) sel.value = old;
+  }
+  const auctionOptions = (filter, all) => (all ? [{ v: '', t: 'All auctions' }] : []).concat(
+    state.auctions.filter(filter || (() => true)).map(a => ({ v: a.id, t: `${a.title} (${money(a.current_price)})` })));
+  const hbars = (items, fmt = v => v) => {
+    const max = Math.max(1, ...items.map(i => i.value));
+    return items.length ? items.map(i => `<div class="hbar"><span>${esc(i.label)}</span><div class="track"><div class="fill" style="width:${(i.value / max * 100).toFixed(1)}%"></div></div><b>${fmt(i.value)}</b></div>`).join('') : '<p class="empty">No data yet.</p>';
+  };
+  function lineChart(pts) {
+    if (pts.length < 2) return '<p class="empty">Place more bids to see your trend.</p>';
+    const W = 600, H = 220, p = 50;
+    const vs = pts.map(x => x.v), mn = Math.min(...vs), mx = Math.max(...vs);
+    const x = i => p + i * (W - p - 16) / (pts.length - 1);
+    const y = v => H - 30 - ((v - mn) / ((mx - mn) || 1)) * (H - 60);
+    const path = pts.map((q, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(q.v).toFixed(1)}`).join(' ');
+    return `<svg viewBox="0 0 ${W} ${H}" class="line" role="img" aria-label="Your bid amounts over time"><path d="${path}" fill="none" stroke="var(--primary)" stroke-width="3" stroke-linejoin="round"/>${
+      pts.map((q, i) => `<circle cx="${x(i).toFixed(1)}" cy="${y(q.v).toFixed(1)}" r="4.5" fill="var(--primary)"><title>${esc(q.t)}: ${money(q.v)}</title></circle>`).join('')
+    }<text x="4" y="${y(mx) + 4}" class="ax">${money(mx)}</text><text x="4" y="${y(mn) + 4}" class="ax">${money(mn)}</text></svg>`;
+  }
+  const statCard = (icon, label, val) => `<div class="stat"><div class="ico"><i class="fa-solid ${icon}"></i></div><div class="val">${val}</div><div class="lbl">${label}</div></div>`;
+
+  /* ---------- Views ---------- */
+  function renderDashboard() {
+    const st = stats();
+    $('#dashStats').innerHTML = [
+      statCard('fa-gavel', 'Total Bids', st.total), statCard('fa-trophy', 'Winning Now', st.winning),
+      statCard('fa-arrow-trend-down', 'Outbid', st.outbid), statCard('fa-circle-check', 'Won', st.won),
+      statCard('fa-percent', 'Win Rate', st.rate + '%'), statCard('fa-wallet', 'Total Spent', money(st.spent))
+    ].join('');
+    const ending = state.auctions.filter(a => a.status === 'active').sort((a, b) => new Date(a.end_date) - new Date(b.end_date)).slice(0, 5);
+    $('#dashEnding').innerHTML = ending.length ? `<div class="list">${ending.map(a => `
+      <div class="row"><div><div class="t">${esc(a.title)}</div><div class="s">${money(a.current_price)} · ${countdown(a)} · ${a.highest_bidder === user.id ? '🏆 You lead' : esc(a.highest_bidder ? nameOf(a.highest_bidder) : 'No bids yet')}</div></div>
+      <button class="btn primary sm" data-bid-auction="${a.id}">Bid</button></div>`).join('')}</div>` : '<p class="empty">No active auctions.</p>';
+    const rec = myBids().sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 6);
+    $('#dashRecent').innerHTML = rec.length ? `<div class="list">${rec.map(b => `
+      <div class="row"><div><div class="t">${esc(auctionOf(b.auction_id).title)}</div><div class="s">${money(b.amount)} · ${fmtDate(b.timestamp)}</div></div>
+      <div>${badge(b.status)} <button class="btn ghost sm" data-view-bid="${b.id}">View</button></div></div>`).join('')}</div>` : '<p class="empty">You have not placed any bids yet.</p>';
+  }
+
+  function renderPlaceBid() {
+    const sel = $('#pbAuction');
+    if (preselect) { sel.dataset.force = preselect; }
+    fillSelect(sel, auctionOptions(a => a.status !== 'ended'));
+    if (preselect) { sel.value = String(preselect); preselect = null; }
+    updatePbInfo();
+  }
+  function updatePbInfo() {
+    const a = auctionOf($('#pbAuction').value);
+    const type = $('#pbType').value;
+    const lbl = $('#pbAmountLabel'), amt = $('#pbAmount');
+    lbl.textContent = (type === 'max' || type === 'proxy') ? 'Maximum amount ($)' : 'Bid amount ($)';
+    amt.disabled = type === 'incremental'; amt.required = type !== 'incremental';
+    if (!a) { $('#pbInfo').innerHTML = '<p class="empty">No open auctions.</p>'; $('#pbChips').innerHTML = ''; return; }
+    const min = minNext(a);
+    if (type === 'incremental') amt.value = min;
+    amt.min = min;
+    $('#pbChips').innerHTML = [1, 2, 5, 10].map(n => `<button type="button" class="chip" data-amt="${min + a.increment * (n - 1)}">${money(min + a.increment * (n - 1))}${n === 1 ? ' (min)' : ''}</button>`).join('');
+    const bids = state.bids.filter(b => b.auction_id === a.id && b.status !== 'withdrawn').sort((x, y) => y.amount - x.amount).slice(0, 5);
+    $('#pbInfo').innerHTML = `
+      <h3><i class="fa-solid fa-tag"></i> ${esc(a.title)}</h3>
+      <div class="big-price">${money(a.current_price)}</div>
+      <p class="muted">${hasBids(a) ? 'Current highest bid' : 'Starting price (no bids yet)'}</p>
+      <dl class="kv">
+        <dt>Minimum next bid</dt><dd>${money(min)}</dd>
+        <dt>Increment</dt><dd>${money(a.increment)}</dd>
+        <dt>Category</dt><dd>${esc(a.category)}</dd>
+        <dt>Time left</dt><dd>${countdown(a)}</dd>
+        <dt>Highest bidder</dt><dd>${a.highest_bidder ? esc(nameOf(a.highest_bidder)) : '—'}</dd>
+        <dt>Status</dt><dd>${esc(a.status)}</dd>
+      </dl>
+      <h3 style="margin-top:16px">Top bids</h3>
+      ${bids.length ? `<ul class="timeline">${bids.map(b => `<li class="${b.bidder_id === user.id ? 'me' : ''}"><span>${esc(nameOf(b.bidder_id))}</span><span>${money(b.amount)}</span></li>`).join('')}</ul>` : '<p class="empty">Be the first to bid.</p>'}`;
+  }
+
+  function renderBids() {
+    fillSelect($('#fAuction'), auctionOptions(null, true));
+    const q = $('#fSearch').value.trim().toLowerCase(), au = $('#fAuction').value, stt = $('#fStatus').value;
+    const mn = $('#fMin').value, mx = $('#fMax').value, mine = $('#fMine').checked;
+    const rows = state.bids.filter(b => {
+      const a = auctionOf(b.auction_id);
+      if (mine && b.bidder_id !== user.id) return false;
+      if (au && String(b.auction_id) !== au) return false;
+      if (stt && b.status !== stt) return false;
+      if (mn !== '' && b.amount < Number(mn)) return false;
+      if (mx !== '' && b.amount > Number(mx)) return false;
+      if (q && !`${a.title} ${nameOf(b.bidder_id)} ${b.note || ''}`.toLowerCase().includes(q)) return false;
+      return true;
+    }).sort((x, y) => new Date(y.timestamp) - new Date(x.timestamp));
+    $('#bidsTable').innerHTML = table(['#', 'Auction', 'Bidder', 'Amount', 'Type', 'Status', 'Time', ''],
+      rows.map(b => ({
+        cls: b.bidder_id === user.id ? 'mine' : '',
+        cells: [b.id, esc(auctionOf(b.auction_id).title), esc(nameOf(b.bidder_id)), `<b>${money(b.amount)}</b>`, TYPE[b.bid_type] || b.bid_type, badge(b.status), fmtDate(b.timestamp), `<button class="btn ghost sm" data-view-bid="${b.id}">Details</button>`]
+      })), 'No bids match your filters.');
+  }
+
+  function renderDetail(id) {
+    const mine = myBids().sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    fillSelect($('#bdSelect'), mine.map(b => ({ v: b.id, t: `#${b.id} · ${auctionOf(b.auction_id).title} · ${money(b.amount)}` })), false);
+    const body = $('#bdBody');
+    if (!mine.length) { body.innerHTML = '<div class="card"><p class="empty">You have no bids yet. Place your first bid!</p></div>'; return; }
+    const b = mine.find(x => x.id === Number(id)) || mine[0];
+    $('#bdSelect').value = b.id;
+    const a = auctionOf(b.auction_id);
+    const all = state.bids.filter(x => x.auction_id === a.id).sort((x, y) => y.amount - x.amount || new Date(x.timestamp) - new Date(y.timestamp));
+    const canAct = a.status !== 'ended' && b.status !== 'withdrawn';
+    body.innerHTML = `<div class="grid two">
+      <div class="card"><h3><i class="fa-solid fa-receipt"></i> Bid #${b.id}</h3>
+        <dl class="kv">
+          <dt>Amount</dt><dd>${money(b.amount)}</dd><dt>Status</dt><dd>${badge(b.status)}</dd><dt>Result</dt><dd>${resultOf(b)}</dd>
+          <dt>Bid type</dt><dd>${TYPE[b.bid_type] || esc(b.bid_type)}</dd><dt>Placed</dt><dd>${fmtDate(b.timestamp)}</dd>
+          <dt>Note</dt><dd>${b.note ? esc(b.note) : '—'}</dd>
+        </dl>
+        <div class="actions">
+          ${a.status !== 'ended' ? `<button class="btn primary" data-bid-auction="${a.id}"><i class="fa-solid fa-arrow-up"></i> Raise bid</button>` : ''}
+          ${canAct ? `<button class="btn danger" data-withdraw="${b.id}"><i class="fa-solid fa-ban"></i> Withdraw</button>` : ''}
+        </div></div>
+      <div class="card"><h3><i class="fa-solid fa-tag"></i> Auction info</h3>
+        <dl class="kv">
+          <dt>Item</dt><dd>${esc(a.title)}</dd><dt>Category</dt><dd>${esc(a.category)}</dd>
+          <dt>Current price</dt><dd>${money(a.current_price)}</dd><dt>Start price</dt><dd>${money(a.start_price)}</dd>
+          <dt>Increment</dt><dd>${money(a.increment)}</dd><dt>Time left</dt><dd>${countdown(a)}</dd>
+          <dt>Leader</dt><dd>${a.highest_bidder ? esc(nameOf(a.highest_bidder)) : '—'}</dd><dt>Total bids</dt><dd>${all.length}</dd>
+        </dl></div>
+      <div class="card" style="grid-column:1/-1"><h3><i class="fa-solid fa-clock-rotate-left"></i> Bid history for this auction</h3>
+        ${table(['Bidder', 'Amount', 'Type', 'Status', 'Time'], all.map(x => ({ cls: x.bidder_id === user.id ? 'mine' : '', cells: [esc(nameOf(x.bidder_id)), money(x.amount), TYPE[x.bid_type] || x.bid_type, badge(x.status), fmtDate(x.timestamp)] })))}
+      </div></div>`;
+  }
+
+  function renderHistory() {
+    fillSelect($('#hAuction'), auctionOptions(null, true));
+    const au = $('#hAuction').value;
+    const mineIds = new Set(myBids().map(b => b.id));
+    const rows = state.history.filter(h => mineIds.has(h.bid_id)).filter(h => !au || String(state.bids.find(b => b.id === h.bid_id).auction_id) === au)
+      .sort((x, y) => new Date(y.timestamp) - new Date(x.timestamp));
+    $('#historyTable').innerHTML = table(['Time', 'Auction', 'Bid', 'Previous', 'New', 'Change'],
+      rows.map(h => {
+        const b = state.bids.find(x => x.id === h.bid_id);
+        return { cells: [fmtDate(h.timestamp), esc(auctionOf(b.auction_id).title), `<a href="#bid-detail/${b.id}">#${b.id}</a>`, money(h.previous_amount), money(h.new_amount), `<span class="badge">${esc(h.change_type)}</span>`] };
+      }), 'No history yet.');
+  }
+
+  function renderAutoBid() {
+    fillSelect($('#abAuction'), auctionOptions(a => a.status === 'active'));
+    const rules = state.autobids.filter(x => x.user_id === user.id);
+    $('#abTable').innerHTML = table(['Auction', 'Max', 'Step', 'Status', ''], rules.map(r => {
+      const a = auctionOf(r.auction_id);
+      return { cells: [esc(a.title), money(r.max_amount), money(r.increment), `<span class="badge ${r.status === 'active' ? '' : 's-pending'}">${esc(r.status)}</span>`,
+        `<button class="btn ghost sm" data-ab-toggle="${r.id}">${r.status === 'active' ? 'Pause' : 'Activate'}</button> <button class="btn danger sm" data-ab-del="${r.id}" aria-label="Delete rule"><i class="fa-solid fa-trash"></i></button>`] };
+    }), 'No auto-bid rules yet.');
+  }
+
+  function renderAnalytics() {
+    const st = stats(), m = myBids();
+    $('#anStats').innerHTML = [
+      statCard('fa-percent', 'Success Rate', st.rate + '%'), statCard('fa-wallet', 'Total Spent', money(st.spent)),
+      statCard('fa-arrow-up-9-1', 'Highest Bid', money(st.highest)), statCard('fa-calculator', 'Average Bid', money(st.avg)),
+      statCard('fa-gavel', 'Total Bids', st.total)
+    ].join('');
+    const pts = m.slice().sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp)).map(b => ({ v: b.amount, t: fmtDate(b.timestamp) }));
+    $('#anLine').innerHTML = lineChart(pts);
+    $('#anStatus').innerHTML = hbars(Object.keys(LABEL).map(s => ({ label: `${ICON[s]} ${LABEL[s]}`, value: m.filter(b => b.status === s).length })).filter(i => i.value));
+    $('#anType').innerHTML = hbars(Object.keys(TYPE).map(k => ({ label: TYPE[k], value: m.filter(b => b.bid_type === k).length })).filter(i => i.value));
+    const cats = {};
+    m.filter(b => b.status === 'won').forEach(b => { const c = auctionOf(b.auction_id).category; cats[c] = (cats[c] || 0) + b.amount; });
+    $('#anCat').innerHTML = hbars(Object.entries(cats).map(([label, value]) => ({ label, value })), money);
+  }
+
+  /* Reports */
+  function reportData(type) {
+    const m = myBids().sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    const t = id => auctionOf(id).title;
+    if (type === 'spending') {
+      const won = m.filter(b => b.status === 'won');
+      return { title: 'Spending report', heads: ['Auction', 'Category', 'Amount paid', 'Date'],
+        rows: won.map(b => [t(b.auction_id), auctionOf(b.auction_id).category, b.amount, fmtDate(auctionOf(b.auction_id).end_date)]),
+        summary: `${won.length} won auction(s) · total spent ${money(won.reduce((s, b) => s + b.amount, 0))}`, money: [2] };
+    }
+    if (type === 'winning') {
+      const w = m.filter(b => b.status === 'winning' || b.status === 'won');
+      return { title: 'Winning report', heads: ['Auction', 'Amount', 'Status', 'Time left'],
+        rows: w.map(b => [t(b.auction_id), b.amount, LABEL[b.status], b.status === 'won' ? 'Ended' : timeLeft(auctionOf(b.auction_id).end_date)]),
+        summary: `${w.filter(b => b.status === 'winning').length} currently winning · ${w.filter(b => b.status === 'won').length} won`, money: [1] };
+    }
+    return { title: 'Bid report', heads: ['Bid #', 'Auction', 'Amount', 'Type', 'Status', 'Result', 'Placed'],
+      rows: m.map(b => [b.id, t(b.auction_id), b.amount, TYPE[b.bid_type] || b.bid_type, LABEL[b.status], resultOf(b).replace(/^\S+\s/, ''), fmtDate(b.timestamp)]),
+      summary: `${m.length} bids · total value ${money(m.reduce((s, b) => s + b.amount, 0))}`, money: [2] };
+  }
+  let lastReport = null;
+  function renderReports() {
+    const r = lastReport = reportData($('#rType').value);
+    $('#rTitle').textContent = `${r.title} — ${user.name}`;
+    $('#rSummary').textContent = `${r.summary} · generated ${fmtDate(new Date().toISOString())}`;
+    $('#rTable').innerHTML = table(r.heads, r.rows.map(row => ({ cells: row.map((c, i) => r.money.includes(i) ? money(c) : esc(c)) })), 'Nothing to report yet.');
+  }
+  function exportCsv() {
+    if (!lastReport) return;
+    const q = v => `"${String(v).replace(/"/g, '""')}"`;
+    const csv = [lastReport.heads, ...lastReport.rows].map(r => r.map(q).join(',')).join('\r\n');
+    const url = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }));
+    const a = document.createElement('a');
+    a.href = url; a.download = `bidpro-${$('#rType').value}-report.csv`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    toast('CSV exported.');
+  }
+
+  /* ---------- Routing ---------- */
+  const RENDER = {
+    dashboard: renderDashboard, 'place-bid': renderPlaceBid, bids: renderBids, 'bid-detail': renderDetail,
+    history: renderHistory, 'auto-bid': renderAutoBid, analytics: renderAnalytics, reports: renderReports
+  };
+  function currentRoute() {
+    const [v, arg] = (location.hash.slice(1) || 'dashboard').split('/');
+    return { view: RENDER[v] ? v : 'dashboard', arg };
+  }
+  function renderCurrent() {
+    if (!user) return;
+    const { view, arg } = currentRoute();
+    $$('.view').forEach(s => s.classList.toggle('active', s.id === view));
+    $$('[data-nav]').forEach(a => a.classList.toggle('active', a.dataset.nav === view));
+    $('#pageTitle').textContent = TITLES[view];
+    RENDER[view](arg);
+    renderBell();
+  }
+  function route() {
+    closeMenu(); renderCurrent();
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------- Notifications ---------- */
+  const myNotes = () => state.notifications.filter(n => n.user_id === user.id).sort((a, b) => new Date(b.time) - new Date(a.time));
+  function renderBell() {
+    const unread = myNotes().filter(n => !n.read).length;
+    $('#bellCount').hidden = !unread; $('#bellCount').textContent = unread > 9 ? '9+' : unread;
+    if (!$('#notifPanel').hidden) renderNotifPanel();
+  }
+  function renderNotifPanel() {
+    const n = myNotes().slice(0, 20);
+    $('#notifPanel').innerHTML = `<h4>Notifications <button class="btn ghost sm" id="clearNotes" type="button">Clear</button></h4>` +
+      (n.length ? n.map(x => `<div class="notif-item ${x.read ? '' : 'unread'}">${esc(x.text)}<small>${fmtDate(x.time)}</small></div>`).join('') : '<p class="empty">You are all caught up.</p>');
+  }
+
+  /* ---------- Auth ---------- */
+  function startSession(u) {
+    user = u; store.set(SESSION, String(u.id));
+    $('#authOverlay').hidden = true;
+    $('#userName').textContent = u.name;
+    if (!location.hash) location.hash = '#dashboard';
+    renderCurrent();
+  }
+  function logout() {
+    user = null; store.del(SESSION);
+    $('#authOverlay').hidden = false; $('#userName').textContent = 'Guest';
+    $('#notifPanel').hidden = true;
+  }
+
+  /* ---------- Menu & theme ---------- */
+  function closeMenu() { $('#sidebar').classList.remove('open'); $('#scrim').classList.remove('show'); }
+  function setTheme(t) {
+    document.documentElement.dataset.theme = t; store.set(THEME, t);
+    $('#themeBtn').innerHTML = `<i class="fa-solid ${t === 'dark' ? 'fa-sun' : 'fa-moon'}"></i>`;
+  }
+
+  /* ---------- Live simulation ---------- */
+  function simulate() {
+    if (!user || !$('#liveToggle').checked) return;
+    const act = state.auctions.filter(a => a.status === 'active');
+    if (!act.length) return;
+    const mineWin = new Set(myBids().filter(b => b.status === 'winning').map(b => b.auction_id));
+    const pool = mineWin.size && Math.random() < 0.5 ? act.filter(a => mineWin.has(a.id)) : act;
+    const a = pool[Math.floor(Math.random() * pool.length)];
+    const bots = state.users.filter(u => u.bot && u.id !== a.highest_bidder);
+    const bot = bots[Math.floor(Math.random() * bots.length)];
+    const amt = minNext(a) + a.increment * Math.floor(Math.random() * 3);
+    addBid(a, bot.id, amt, 'manual');
+    toast(`🔔 Live: ${bot.name} bid ${money(amt)} on ${a.title}`);
+    runAutoBids(a.id); save(); renderCurrent();
+  }
+
+  /* ---------- Events ---------- */
+  function bind() {
+    window.addEventListener('hashchange', route);
+    $('#menuBtn').addEventListener('click', () => { $('#sidebar').classList.add('open'); $('#scrim').classList.add('show'); });
+    $('#scrim').addEventListener('click', closeMenu);
+    $('#themeBtn').addEventListener('click', () => setTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'));
+    $('#logoutBtn').addEventListener('click', logout);
+    $('#bellBtn').addEventListener('click', e => {
+      e.stopPropagation();
+      const p = $('#notifPanel'); p.hidden = !p.hidden;
+      if (!p.hidden) {
+        renderNotifPanel();
+        setTimeout(() => { myNotes().forEach(n => { n.read = true; }); save(); renderBell(); }, 1500);
+      }
+    });
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.notif-wrap')) $('#notifPanel').hidden = true;
+      const t = e.target.closest('button, [data-bid-auction]');
+      if (!t) return;
+      if (t.id === 'clearNotes') { state.notifications = state.notifications.filter(n => n.user_id !== user.id); save(); renderNotifPanel(); renderBell(); }
+      if (t.dataset.bidAuction) { preselect = t.dataset.bidAuction; if (location.hash === '#place-bid') renderCurrent(); else location.hash = '#place-bid'; }
+      if (t.dataset.viewBid) location.hash = '#bid-detail/' + t.dataset.viewBid;
+      if (t.dataset.withdraw) withdraw(Number(t.dataset.withdraw));
+      if (t.dataset.amt) { $('#pbAmount').value = t.dataset.amt; }
+      if (t.dataset.abToggle) {
+        const r = state.autobids.find(x => x.id === Number(t.dataset.abToggle));
+        if (r) { r.status = r.status === 'active' ? 'paused' : 'active'; if (r.status === 'active') runAutoBids(r.auction_id); save(); renderCurrent(); }
+      }
+      if (t.dataset.abDel) { state.autobids = state.autobids.filter(x => x.id !== Number(t.dataset.abDel)); save(); renderCurrent(); toast('Rule deleted.'); }
+    });
+
+    // Auth tabs & forms
+    $$('.tab').forEach(tab => tab.addEventListener('click', () => {
+      $$('.tab').forEach(x => x.classList.toggle('active', x === tab));
+      $('#loginForm').hidden = tab.dataset.auth !== 'login'; $('#registerForm').hidden = tab.dataset.auth !== 'register';
+    }));
+    $('#loginForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const email = $('#loginEmail').value.trim().toLowerCase(), pw = $('#loginPass').value;
+      const u = state.users.find(x => !x.bot && x.email.toLowerCase() === email && x.password === pw);
+      if (!u) { $('#loginMsg').textContent = 'Invalid email or password.'; return; }
+      $('#loginMsg').textContent = ''; startSession(u);
+    });
+    $('#registerForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const name = $('#regName').value.trim(), email = $('#regEmail').value.trim().toLowerCase(), pw = $('#regPass').value;
+      if (state.users.some(x => !x.bot && x.email.toLowerCase() === email)) { $('#regMsg').textContent = 'That email is already registered.'; return; }
+      if (pw.length < 6) { $('#regMsg').textContent = 'Password must be at least 6 characters.'; return; }
+      const u = { id: nextId(state.users), name, email, password: pw };
+      state.users.push(u); save(); $('#regMsg').textContent = ''; startSession(u);
+      toast(`Welcome to BidPro, ${name}!`);
+    });
+
+    // Place bid
+    $('#pbAuction').addEventListener('change', () => { $('#pbAmount').value = ''; updatePbInfo(); });
+    $('#pbType').addEventListener('change', () => { $('#pbAmount').value = ''; updatePbInfo(); });
+    $('#bidForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const r = placeBid(user.id, Number($('#pbAuction').value), $('#pbAmount').value, $('#pbType').value, $('#pbNote').value.trim());
+      const msg = $('#pbMsg'); msg.textContent = r.msg; msg.classList.toggle('err', !r.ok);
+      if (r.ok) { toast(r.msg); $('#pbAmount').value = ''; $('#pbNote').value = ''; renderCurrent(); }
+    });
+
+    // Filters
+    ['fSearch', 'fAuction', 'fStatus', 'fMin', 'fMax', 'fMine'].forEach(id => $('#' + id).addEventListener('input', renderBids));
+    $('#hAuction').addEventListener('change', renderHistory);
+    $('#bdSelect').addEventListener('change', e => { location.hash = '#bid-detail/' + e.target.value; });
+
+    // Auto-bid form
+    $('#abForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const a = auctionOf($('#abAuction').value), max = Number($('#abMax').value), inc = Number($('#abInc').value);
+      const msg = $('#abMsg'); msg.classList.add('err');
+      if (!a) { msg.textContent = 'Select an active auction.'; return; }
+      if (!(max >= minNext(a)) && a.highest_bidder !== user.id) { msg.textContent = `Maximum must be at least ${money(minNext(a))}.`; return; }
+      if (!(inc > 0)) { msg.textContent = 'Increment must be positive.'; return; }
+      setAutoBid(user.id, a.id, max, inc); runAutoBids(a.id); save();
+      msg.classList.remove('err'); msg.textContent = 'Auto-bid rule saved.';
+      $('#abMax').value = ''; renderCurrent();
+    });
+
+    // Reports
+    $('#rType').addEventListener('change', renderReports);
+    $('#rCsv').addEventListener('click', exportCsv);
+    $('#rPrint').addEventListener('click', () => window.print());
+
+    // Live toggle
+    $('#liveToggle').addEventListener('change', e => toast(e.target.checked ? 'Live updates on' : 'Live updates paused'));
+  }
+
+  /* ---------- Init ---------- */
+  function init() {
+    setTheme(store.get(THEME) || (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+    state = load();
+    if (!state) seedState();
+    tick();
+    bind();
+    const sid = Number(store.get(SESSION));
+    const u = sid && state.users.find(x => x.id === sid && !x.bot);
+    if (u) startSession(u); else { $('#authOverlay').hidden = false; }
+
+    let n = 0;
+    setInterval(() => {
+      $$('.cd').forEach(el => { el.textContent = timeLeft(el.dataset.end); });
+      if (++n % 5 === 0 && tick() && user) renderCurrent();
+    }, 1000);
+    setInterval(simulate, 22000);
+  }
+  init();
+})();
+
+</script>
+  <!-- Bid data stored in JavaScript arrays (persisted with localStorage) -->
+  <!-- Auction data stored in JavaScript objects -->
+</body>
+</html>
+
+</body></html>
